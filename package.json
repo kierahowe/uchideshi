@@ -7,5 +7,5 @@
       "angular" : "latest",
       "sqlite3" : "latest",
       "mailparser" : "latest"
-    },
+    }
 }
