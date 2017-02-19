@@ -1,0 +1,142 @@
+<!doctype html>
+<html ng-app="messagelistApp">
+	<head>
+		<meta charset="UTF-8">
+		<title>Uchideshi: Messages</title>
+		<script src="angular.js"></script>
+		<script src="../renderer.js"></script>
+	</head>
+	<body id="messagepage" ng-controller="messagelistQueryControl">
+		
+		<table id="messages">
+			<thead>
+				<tr>
+					<th>X</th>
+					<th>From</th>
+					<th>To</th>
+					<th>Subject</th>
+					<th>Date Received</th>
+					<th>Size</th>
+					<th>Status</th>
+					<th>Attachment</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="item in messages track by item.id">
+					<td><i class="fa {{item.x}}" aria-hidden="true"></i></td>
+					<td>{{item.messageMeta.from}}</td>
+					<td>{{item.messageMeta.to}}</td>
+					<td>{{item.messageMeta.subject}}</td>
+					<td>{{item.timein}}</td>
+					<td>{{item.size}}</td>
+					<td>{{item.status}}</td>
+					<td>{{item.attachment}}</td>
+				</tr>
+			</table>
+		</div>
+
+
+	</body>
+<script>
+// Define the `messagelistcatApp` module
+var messagelistApp = angular.module('messagelistApp', []).config( [
+    '$compileProvider',
+    function( $compileProvider )
+    {   
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|javascript):/);
+        // Angular before v1.2 uses $compileProvider.urlSanitizationWhitelist(...)
+    }
+]);
+
+// Define the `messagelistListController` controller on the `messagelistcatApp` module
+messagelistApp.controller('messagelistQueryControl', function ($scope) {
+
+
+	// $scope.messages = [{	
+	// 		id: 1, 
+	// 		x: 'fa-bolt',
+	// 		from: 'Homer',
+	// 		to: 'Marge', 
+	// 		dateReceived: 'Today',
+	// 		size: '1kb',
+	// 		status: 'todo', 
+	// 		attachment: 1,
+	// 		subject: 'Where\'s the Mop'
+	// 	}, {
+	// 		id: 2, 
+	// 		x: 'fa-bolt',
+	// 		from: 'Lisa',
+	// 		to: 'Marge', 
+	// 		dateReceived: 'Today',
+	// 		size: '1kb',
+	// 		status: 'todo', 
+	// 		attachment: 1,
+	// 		subject: 'Dad set fire to the mop'
+	// 	}, {
+	// 		id: 3, 
+	// 		x: 'fa-bolt',
+	// 		from: 'Bart',
+	// 		to: 'Marge', 
+	// 		dateReceived: 'Today',
+	// 		size: '1kb',
+	// 		status: 'todo', 
+	// 		attachment: 1,
+	// 		subject: 'Nothings happening'
+	// 	}, {
+	// 		id: 4, 
+	// 		x: 'fa-bolt',
+	// 		from: 'Bart',
+	// 		to: 'Marge', 
+	// 		dateReceived: 'Today',
+	// 		size: '1kb',
+	// 		status: 'todo', 
+	// 		attachment: 1,
+	// 		subject: 'You should ignore the call from the school'
+	// 	}, {
+	// 		id: 5, 
+	// 		x: 'fa-bolt',
+	// 		from: 'Principal Skinner',
+	// 		to: 'Marge', 
+	// 		dateReceived: 'Today',
+	// 		size: '1kb',
+	// 		status: 'todo', 
+	// 		attachment: 1,
+	// 		subject: 'Bart set fire to the school'
+	// 	}, {
+	// 		id: 6, 
+	// 		x: 'fa-bolt',
+	// 		from: 'Homer',
+	// 		to: 'Marge', 
+	// 		dateReceived: 'Today',
+	// 		size: '1kb',
+	// 		status: 'todo', 
+	// 		attachment: 1,
+	// 		subject: 'Never mind'
+	// 	}];
+	// 	
+	$scope.messages = global.plugins.callFunction ('getMessages',{ });
+console.log ($scope.messages);
+	// var cnt = 7;
+	// var r = function () { 
+	// 	if (cnt > 50) { return; }
+	// 	$scope.messages.push ({	
+	// 		id: cnt ++, 
+	// 		x: 'fa-bolt',
+	// 		from: 'Homer',
+	// 		to: 'Marge', 
+	// 		dateReceived: 'Today',
+	// 		size: '1kb',
+	// 		status: 'todo', 
+	// 		attachment: 1,
+	// 		subject: 'Where\'s the Mop'
+	// 	});
+	// 	console.log ($scope.messages);
+	// 	$scope.$apply();
+	// 	setTimeout (r, 1000);			
+	// }
+	// setTimeout (r, 1000);
+
+});
+
+</script>
+</html>

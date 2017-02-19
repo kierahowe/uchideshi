@@ -1,0 +1,364 @@
+<!doctype html>
+<html ng-app="todoApp">
+	<head>
+		<meta charset="UTF-8">
+		<title>Uchideshi: Main</title>
+		<script src="angular.js"></script>
+		<script src="../renderer.js"></script>
+	</head>
+	<body id="maindash">
+
+<script type="text/ng-template"  id="tree_item_renderer.html">
+	<div ng-if="data.nodes.length" id="topt_{{data.id}}" 
+		class="between" ondrop="drop(this,event)" ondragover="allowDrop(event)"
+		ondragleave="noDrop(event)"> 
+	</div>
+    <div id="drag_{{data.id}}" class="item" draggable="true" ondragstart="return drag(event)">
+			<a href="javascript: openQuery({{data.qid}})">{{data.name}}</a>
+			<div  class="itemedit">
+				<div style="display: inline-block; padding-left: 10px;">
+					<i class="fa fa-pencil-square-o" aria-hidden="true" ng-click="edititem(data.id);"></i>
+				</div>
+				<div style="display: inline-block; padding-left: 10px;color: red;">
+					<i class="fa fa-ban" aria-hidden="true" ng-click="delete(data)"></i>
+				</div>
+			</div>
+			<div class="itemcount">
+				<div style="display: inline-block; color: red; padding-left: 10px;">1</div>
+				<div style="display: inline-block; color: yellow; padding-left: 10px;">12</div>
+				<div style="display: inline-block; color: green; padding-left: 10px;">9</div>
+			</div>
+
+		<div style="margin-left: 20px;">
+			<div ng-class="{'hassubnodes':data.nodes.length}" id="topq_{{data.id}}" 
+				class="between" ondrop="drop(this,event)" ondragover="allowDrop(event)"
+	    		ondragleave="noDrop(event)"> 
+			</div>
+	        <div ng-repeat="data in data.nodes" ng-include="'tree_item_renderer.html'"></div>
+		</div>
+    </div>
+</script>
+<div id="topquicklaunch">
+	<i class="fa fa-calendar" aria-hidden="true" onClick="openToolBar('calendar');"></i>
+	<i class="fa fa-users" aria-hidden="true" onClick="openToolBar('contacts');"></i>
+</div>
+<div id="topQ" class="between" ondrop="drop(this,event)" ondragover="allowDrop(event)" ondragleave="noDrop(event)">
+</div>
+<div id="maintree" ng-app="Application" ng-controller="TreeController">
+    <div ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></div>
+</div>
+<div id="bottomspacer" class="bottomspacer"></div>
+
+<div id="qsearch" ng-app="Application" ng-controller="QuerySearchCtl">
+    <div ng-if="results.length" ng-repeat="result in results">
+    	<div draggable="true" ondragstart="return drag(event)" id="qsrh_{{result.id}}">
+			<i class="fa fa-arrows-alt" aria-hidden="true"></i>
+			{{result.queryname}}
+			<input type=hidden id="qsrhname_{{result.id}}" 
+				value="{{result.queryname}}">
+		</div>
+    </div>
+    <div ng-if="!results.length">
+    	No results found
+    </div>
+</div>
+<div id="editing">
+	<div draggable="true" ondragstart="return drag(event)" id="newgroup">
+		<i class="fa fa-arrows-alt" aria-hidden="true"></i>
+		<label>Add New: <input type=text id="searchadd" onkeyup="searchKeyUp();"></label>
+	</div>
+</div>
+<div id="menu">
+	<div class="icons">
+		<a href="javascript:runMenu ('refreshpage'); ">
+			<i class="fa fa-refresh" aria-hidden="true"></i>
+		</a>
+	</div>
+	<div class="icons">
+		<a href="javascript:runMenu ('settings'); ">
+			<i class="fa fa-cogs" aria-hidden="true"></i>
+		</a>
+	</div>
+	<div class="icons">
+		<a href="javascript:runMenu ('console'); ">
+			<i class="fa fa-bolt" aria-hidden="true"></i>
+		</a>
+	</div>
+	<div class="icons">
+		<a href="javascript:editItems(); ">
+			<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+		</a>
+	</div>
+</div>
+</body>
+<script>
+
+function openToolBar (name) { 
+	var file = '';
+	if (name == 'calendar') { file = 'calendar.html'; }
+	if (name == 'contacts') { file = 'contacts.html'; }
+
+	if (file == '') { return; }
+	global.plugins.callFunction ('openNewWindow', [file, 
+									{x: 0, y:0, width: 800, height: 500, devTools: true} ]);
+}
+
+function openQuery (id) { 
+//	alert (id);
+	global.plugins.callFunction ('openNewWindow', ['messagelist.html?id=' + id, 
+									{x: 0, y:0, width: 800, height: 500, devTools: true} ]);
+}
+
+	var mod = angular.module("todoApp", []);
+
+	mod.config( [
+	    '$compileProvider',
+	    function( $compileProvider )
+	    {   
+	        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|javascript):/);
+	    }
+	]);
+
+	mod.controller("TreeController", ['$scope', function($scope) {
+	    $scope.delete = function(data) {
+	    	if (confirm('Are you sure you want to delete this item (' + data.name + ')')) { 
+				$scope.recDeleteItem (data.id, $scope.tree, 0);
+				global.plugins.callFunction ('deleteDashQuery', { 'type': 'maindash', 'srcid': data.id });
+			}
+	    };
+	    $scope.recDeleteItem = function (idnum, nodes, level) { 
+	    	if (level > 10) { return; }
+	    	for (var item in nodes) { 
+	    		if (nodes[item].id == idnum) { 
+	    			var tmp = nodes[item];
+	    			nodes.splice(item,1);
+	    			return tmp;
+	    		}
+	    		if (nodes[item]['nodes'].length) { 
+	    			var ret = $scope.recDeleteItem (idnum, nodes[item]['nodes'], level + 1);
+	    			if (ret != null) { 
+	    				return ret;
+	    			}
+	    		}
+	    	}
+	    	return null;
+	    };
+	    $scope.recAddItem = function (idnum, type, newitem, nodes, level) { 
+	    	if (level > 10) { return; }
+	    	for (var item in nodes) { 
+	    		if (nodes[item].id == idnum) { 
+			    	var tmp = nodes[item];
+	    			if (type == 'child') { 
+	    				nodes[item]['nodes'].unshift(newitem);
+		    		} else if (type == 'above') { 
+		    			nodes.splice(item,0,newitem);
+		    		} else { 
+		    			nodes.splice(item + 1,0,newitem);
+		    		}
+	    			return tmp;
+	    		}
+	    		if (nodes[item]['nodes'].length) { 
+	    			var ret = $scope.recAddItem (idnum, type, newitem, nodes[item]['nodes'], level + 1);
+	    			if (ret != null) { 
+	    				return ret;
+	    			}
+	    		}
+	    	}
+	    	return null;
+	    };
+
+	    $scope.add = function(data) {
+	        var post = data.nodes.length + 1;
+	        var newName = data.name + '-' + post;
+	        data.nodes.push({name: newName,nodes: []});
+	    }; 
+	    $scope.drop = function (srcidnum, thisidnum, type, itemname) { 
+	    	var item;
+	    	var srctag = itemname.substring(0,4);
+
+	    	if (itemname == 'newgroup') { 
+		    	// This is a new group
+		    	var idout = global.plugins.callFunction ('updateDashQuery', 
+    			{
+    				'type': 'maindash', 'id': null, 'qid': null, 
+    				'overridename': document.getElementById('searchadd').value, 
+    				'destid': thisidnum, 'postype': type,
+    			});
+    			if (idout == null) { 
+    				alert ("Failed to create new item");
+    				return;
+    			}
+		    	item = { 
+		    		'id': idout, 
+		    		'name': document.getElementById('searchadd').value,  
+		    		'overridename': document.getElementById('searchadd').value,  
+		    		'nodes': [] 
+		    	};
+		    } else if (srctag == 'qsrh') {
+		    	var qid = itemname.substring(5);
+		    	var idout = global.plugins.callFunction ('updateDashQuery', 
+    			{
+    				'type': 'maindash', 'id': null, 'qid': qid, 
+    				'destid': thisidnum, 'postype': type,
+    			});
+		    	item = { 
+		    		'id': idout, 
+		    		'name': document.getElementById('qsrhname_' + qid).value,  
+		    		'nodes': [] 
+		    	};
+		    } else { 
+		    	item = $scope.recDeleteItem (srcidnum, $scope.tree, 0);
+		    	if (item == null) { console.log ('fail'); return; }
+		    }
+	    	$scope.recAddItem (thisidnum, type, item, $scope.tree, 0);
+
+	    	if (itemname == 'newgroup') { 
+	    	} else if (srctag == 'qsrh') { 
+	    		
+	    	} else {
+		    	global.plugins.callFunction ('moveDashQuery', 
+		    			{
+		    				'type': 'maindash', 'srcid': srcidnum, 
+		    				'destid': thisidnum, 'postype': type,
+		    			});
+		    } 
+	    };
+
+    	var x = global.plugins.callFunction ('getQueries', {'type': 'maindash'});
+
+    	console.log (x);
+	    $scope.tree = x;
+	}]);
+
+	mod.controller("QuerySearchCtl", ['$scope', function($scope) {
+		$scope.searchIt = function (term) { 
+			$scope.results = global.plugins.callFunction ('searchQueries', {'term': term});;
+		}
+		$scope.results = [];
+	}]);
+
+var currentItem = null;
+
+function editItems () { 
+	var main = document.getElementById ('maindash');
+
+	if (!main.classList.contains ('editingon')) { 
+		main.classList.add('editingon');
+	} else { 
+		main.classList.remove('editingon');
+	}
+}
+
+function noDrop(ev) {
+	ev.target.style.height = '5px';
+	ev.target.style.border = 'none';
+	ev.preventDefault();
+}
+
+function allowDrop(ev) {
+//	console.log ("Drag...", ev);
+	var x = ev.offsetX;
+	var thisidnum = ev.srcElement.id.substring (5);
+	if (currentTo == null) { return; }
+	var srcidnum = currentTo.id.substring (5);
+
+	if (thisidnum == srcidnum) { return; }
+
+	if (!ev.srcElement.classList.contains ('hassubnodes') && 
+		ev.srcElement.id.substring (0,5) != 'topt_') { 
+	    if (x < 30) { 
+	    	ev.srcElement.classList.add('evenwith');
+	//    	ev.srcElement.style.marginLeft = '-20px';
+	    }
+	}
+    if (x > 90) { 
+    	ev.srcElement.classList.remove('evenwith');
+//		ev.srcElement.style.marginLeft = '0px';
+    }
+    //ev.srcElement.innerHTML = srcidnum + ' - ' + thisidnum;
+
+	ev.target.style.height = '20px';
+	ev.target.style.border = '1px dashed grey';
+	ev.preventDefault();
+}
+
+function drop (ele, ev) { 
+	var scope = angular.element(document.getElementById('maintree')).scope()
+
+	var thisidnum = ev.srcElement.id.substring (5);
+	var key = ev.srcElement.id.substring (0,4);
+
+	if (currentTo == null) { return; }
+
+	if (currentTo.id == 'newgroup') { 
+		// add new group item
+		srcidnum = null;
+	} else { 
+		var srcidnum = currentTo.id.substring (5);
+	}
+
+	var type;
+	if (key == 'topt') { 
+		type = 'above';
+	} else if (key == 'topq') { 
+		if (ev.srcElement.classList.contains ('evenwith')) { 
+			type = 'even';
+		} else { 
+			type = 'child';
+		}
+	}
+
+	scope.drop (srcidnum, thisidnum, type, currentTo.id);
+	scope.$apply();
+	//MoveQueryOnList (srcidnum, thisidnum, type);
+
+	console.log ();
+
+
+	noDrop(ev);
+
+	currentTo = null;
+}
+
+function drag (ev) { 
+	if (ev.srcElement.id == 'newgroup') { 
+		var sa = document.getElementById ('searchadd');
+		if (sa == null || sa.value == '') { 
+			return false;
+		}
+	}
+
+	currentTo = ev.target;
+	if (currentTo.tagName == 'A' || currentTo.tagName == 'a') { 
+		currentTo = currentTo.parentElement;
+	}
+
+	var main = document.getElementById ('maindash');
+	if (!main.classList.contains ('editingon')) { 
+		return false;
+	} 
+	return true;
+}
+
+function searchKeyUp () { 
+	var qsrch = document.getElementById('qsearch');
+	var scope = angular.element(qsrch).scope()
+	
+	var txt = document.getElementById ('searchadd');
+	if (txt == null || txt.value.length < 3) { 
+		qsrch.classList.remove('showsearch');
+		document.getElementById ('bottomspacer').classList.remove('showsearch');
+		return; 
+	}
+
+	if (!qsrch.classList.contains ('showsearch')) { 
+		qsrch.classList.add('showsearch');
+		document.getElementById ('bottomspacer').classList.add('showsearch');
+	}
+	
+	scope.searchIt (txt.value);
+	scope.$apply();
+};
+
+</script>
+</html>

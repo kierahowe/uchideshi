@@ -1,0 +1,25 @@
+{
+	"sockport": 8945,
+	"dbtype": "sqlite",
+	"dbname": "database.db",
+	"dbuser": "",
+	"dbpass": "",
+
+	"locationMainDir": "./",
+	"locationMods": "node_modules/",
+
+	"pluginList": [
+		{ 
+			"name": "udemail" 
+		} 
+    ],
+
+    "mainWindow": "index.html",
+    "mainSubPage": "Appointments",
+    "mainWindowPosition": { 
+      "dock": "right", 
+      "width": 300, 
+      "alwaysOnTop": true
+    },
+    "theme": "katana"
+}

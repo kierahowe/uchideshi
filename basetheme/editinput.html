@@ -1,0 +1,60 @@
+<!doctype html>
+<html ng-app="editinputApp">
+	<head>
+		<meta charset="UTF-8">
+		<title>Uchideshi: Edit input</title>
+		<script src="angular.js"></script>
+		<script src="../renderer.js"></script>
+<script>
+console.log (dataInput);
+</script>
+
+	</head>
+	<body id="editinput" ng-controller="editControl">
+	<h2>Edit Input</h2>
+	{{name}}
+	
+	<div class="inputrepeat" ng-repeat="item in fields">
+		<div class="label">
+			<label for="{{item.name}}">{{item.outname}}:</label>
+		</div>
+		<input type="{{item.type}}" id="{{item.name}}" size="{{item.size}}" 
+				ng-true-value="true" ng-false-value="false" 
+				ng-model="settings[item.name]" ng-blur="updateItem(item.name);" >
+
+	</div>
+
+
+	
+<script>
+
+// Define the `editinputApp` module
+var editinputApp = angular.module('editinputApp', []).config( [
+    '$compileProvider',
+    function( $compileProvider )
+    {   
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|javascript):/);
+    }
+]);
+
+editinputApp.controller('editControl', function ($scope) {
+	var y = global.plugins.callFunction ('getActiveInput', { 'id': dataInput.id });
+	$scope.name = y.name;
+	$scope.id = dataInput.id;
+	if (typeof y.settingFields == 'undefined') { y.settingFields = []; }
+	y.settingFields.unshift ({name: 'name', outname: 'Input Alias Name', type: 'text', size: 25, required: true })
+	$scope.fields = y.settingFields;
+	$scope.settings = y.settings;
+	console.log (y.settingFields);
+	$scope.updateItem = function (name) { 
+		var val;
+		
+		val = $scope.settings[name];
+		global.plugins.inputs.settingChange ($scope.id, name, val);
+	}
+});
+
+	</script>
+
+	</body>
+</html>

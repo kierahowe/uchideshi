@@ -1,0 +1,83 @@
+Uchideshi email test
+udplugintest@gmail.com
+omega12X$
+
+
+
+insert into queries (queryname, params) values ('Sheridan College', 'xxxx');
+insert into queries (queryname, params) values ('Wiley Solutions', 'xxxx');
+insert into queries (queryname, params) values ('Web Weapons', 'xxxx');
+insert into queries (queryname, params) values ('Friends/Family', 'xxxx');
+insert into queries (queryname, params) values ('Instructors', 'xxxx');
+insert into queries (queryname, params) values ('Admin', 'xxxx');
+insert into queries (queryname, params) values ('Students', 'xxxx');
+insert into queries (queryname, params) values ('Innovative Vision', 'xxxx');
+insert into queries (queryname, params) values ('Innovative Research', 'xxxx');
+insert into queries (queryname, params) values ('SimcoNet', 'xxxx');
+insert into queries (queryname, params) values ('New Leads', 'xxxx');
+insert into queries (queryname, params) values ('Old Clients', 'xxxx');
+insert into queries (queryname, params) values ('Current Clients', 'xxxx');
+insert into queries (queryname, params) values ('Family', 'xxxx');
+insert into queries (queryname, params) values ('Friends', 'xxxx');
+
+insert into queriesdisplay (qid, type, parent, ord) values (1, 'maindash', null, 1);
+insert into queriesdisplay (qid, type, parent, ord) values (2, 'maindash', null, 2);
+insert into queriesdisplay (qid, type, parent, ord) values (3, 'maindash', null, 3);
+insert into queriesdisplay (qid, type, parent, ord) values (4, 'maindash', null, 4);
+insert into queriesdisplay (qid, type, parent, ord) values (5, 'maindash', 1 + 15, 5);
+insert into queriesdisplay (qid, type, parent, ord) values (6, 'maindash', 1 + 15, 6);
+insert into queriesdisplay (qid, type, parent, ord) values (7, 'maindash', 1 + 15, 7);
+insert into queriesdisplay (qid, type, parent, ord) values (8, 'maindash', 2 + 15, 8);
+insert into queriesdisplay (qid, type, parent, ord) values (9, 'maindash', 2 + 15, 9);
+insert into queriesdisplay (qid, type, parent, ord) values (10, 'maindash', 2 + 15, 10);
+insert into queriesdisplay (qid, type, parent, ord) values (11, 'maindash', 3 + 15, 11);
+insert into queriesdisplay (qid, type, parent, ord) values (12, 'maindash', 3 + 15, 12);
+insert into queriesdisplay (qid, type, parent, ord) values (13, 'maindash', 3 + 15, 13);
+insert into queriesdisplay (qid, type, parent, ord) values (14, 'maindash', 4 + 15, 14);
+insert into queriesdisplay (qid, type, parent, ord) values (15, 'maindash', 4 + 15, 15);
+
+1|Sheridan College|xxxx||0
+2|Wiley Solutions|xxxx||0
+3|Web Weapons|xxxx||0
+4|Friends/Family|xxxx||0
+5|Instructors|xxxx|1|0
+6|Admin|xxxx|1|0
+7|Students|xxxx|1|0
+8|Innovative Vision|xxxx|2|0
+9|Innovative Research|xxxx|2|0
+10|SimcoNet|xxxx|2|0
+11|New Leads|xxxx|3|0
+12|Old Clients|xxxx|3|0
+13|Current Clients|xxxx|3|0
+14|Family|xxxx|4|0
+15|Friends|xxxx|4|0
+
+
+
+All Tables...
+CREATE TABLE tags (id integer ,tagname varchar(255) , PRIMARY KEY (id) );
+CREATE TABLE queries (id integer ,queryname varchar(255) ,params text , PRIMARY KEY (id) );
+CREATE TABLE messagecontent (id integer ,messageid integer ,contenttype varchar(20) ,content text , PRIMARY KEY (id), FOREIGN KEY (messageid) REFERENCES messages (id) );
+CREATE TABLE messagemeta (id integer ,messageid integer ,name varchar(120) ,val text , PRIMARY KEY (id), FOREIGN KEY (messageid) REFERENCES messages (id) );
+CREATE TABLE messagetags (tagid integer ,messageid integer , FOREIGN KEY (tagid) REFERENCES tags (id), FOREIGN KEY (messageid) REFERENCES messages (id) );
+CREATE TABLE settings (name varchar(100), val text, primary key (name));
+CREATE TABLE messages (id integer ,pluginid integer ,uniqueid varchar(255) ,type varchar(100) ,timein datetime , PRIMARY KEY (id) );
+CREATE TABLE queriesdisplay (id integer ,qid integer ,type varchar(20) ,parent integer ,ord integer , params text, overridename varchar(255), PRIMARY KEY (id), FOREIGN KEY (qid) REFERENCES queries (id), FOREIGN KEY (parent) REFERENCES queriesdisplay (id) );
+sqlite> 
+
+
+
+Messages: 
+
+insert into messages (pluginid, uniqueid, type, timein) values ('udemail', '12345', 'email','aug 24,2016 12:34pm');
+insert into messages (pluginid, uniqueid, type, timein) values ('udemail', '12345', 'email','aug 24,2016 12:34pm');
+insert into messages (pluginid, uniqueid, type, timein) values ('udemail', '12345', 'email','aug 24,2016 12:34pm');
+insert into messages (pluginid, uniqueid, type, timein) values ('udemail', '12345', 'email','aug 24,2016 12:34pm');
+insert into messages (pluginid, uniqueid, type, timein) values ('udemail', '12345', 'email', 'aug 24,2016 12:34pm');
+ 
+
+insert into messagemeta (messageid, name, val) values (1, 'From', 'Homer@simpson.com');
+insert into messagemeta (messageid, name, val) values (1, 'To', 'kiera@wileysol.com');
+insert into messagemeta (messageid, name, val) values (1, 'Subject', 'HI, this is Homer');
+
+

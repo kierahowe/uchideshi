@@ -1,0 +1,371 @@
+<!doctype html>
+<html ng-app="calendarApp">
+	<head>
+		<meta charset="UTF-8">
+		<title>Uchideshi: Calendar</title>
+		<script src="angular.js"></script>
+		<script src="../renderer.js"></script>
+	</head>
+	<body id="maincalendar">
+		<div class="calmaintitle">
+			<div id="calselectlayout">
+				<div id='clickday' onclick='changeLayout("day", {});'>Day</div>
+				<div id='clickweek' onclick='changeLayout("week", {});'>Week</div>
+				<div id='clickmonth' onclick='changeLayout("month", {});'>Month</div>
+				<div id='clickyear' onclick='changeLayout("year", {});'>Year</div>
+			</div>
+			<div id="caldaynav"> 
+				<span><i class="fa fa-angle-left" aria-hidden="true"></i></span>
+				<span onclick="changeLayout('', {'date': new Date() });">Today</span>
+				<span><i class="fa fa-angle-right" aria-hidden="true"></i></span>
+				&nbsp;
+			</div>
+			<div style="clear: both"></div>
+		</div>
+		<div id="caltableday">
+			<div id="calcontday" ng-controller="tableDayController">
+				<div class="caldayhalf">
+					<div class="caldaycell">
+						<div class="caldaytitle">{{day.dayName}}</div>
+						<div class="caldayscroll">
+							<div ng-include="'daydisplayoutput'"></div>
+						</div>
+					</div>
+				</div>
+				<div class="caldayhalfright">
+					<div ng-include="'monthdisplayoutput'"></div>
+				</div>
+			</div>
+		</div>
+		<div id="caltableweek">
+			<div id="calcontweek" class="caltable" ng-controller="tableWeekController">
+				<div class="calrow">
+					<div class="calcell" ng-repeat="day in week">
+						<div class="caldaytitle">{{day.dayName}}</div>
+
+						<div ng-include="'daydisplayoutput'"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="caltablemonth">
+			<div id="calcontmonth" ng-controller="tableMonthController">
+				<div ng-include="'monthdisplayoutput'"></div>
+			</div>
+		</div>
+		<div id="caltableyear" class="caltable">
+			<div id="calcontyear" class="caltable" ng-controller="tableYearController">
+				<div id="calmonthtitle">{{yearName}}</div>
+				<div class="calrow" ng-repeat="blocks in calmonths">
+					<div class="calcell" ng-repeat="calweeks in blocks" style="{{month.dom == ''?'border: none;':''}}">
+						<div ng-include="'monthdisplayoutput'"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/ng-template"  id="daydisplayoutput">
+		<div class="caltimeitemnames"> 
+			<div class="calticell" ng-repeat="time in day.times">
+				<div class="caltiname">{{time.name}}</div>
+			</div>
+		</div>
+		<div class="timeitems">
+			<div ng-repeat="item in day.items" class="calitementry" style="top: {{20 + item.decTime * 86}}px; left: {{item.leftPos}}%; width: {{item.width}}%; height: {{item.decLength * 85}}px;" id="{{item.id}}">
+				{{item.name}}
+			</div>
+			<div class="calbordcell" ng-repeat="time in day.times">&nbsp;</div>
+		</div>
+		<div style="clear: both"></div>
+	</script>
+	<script type="text/ng-template"  id="monthdisplayoutput">
+		<div class="caltable">
+			<div id="calmonthtitle" ng-click="changeLayout('month',{'date':calweeks.date});">{{calweeks.monthName}}</div>
+			<div class="calrow" ng-repeat="row in calweeks.days">
+				<div class="calcell" ng-repeat="day in row" style="{{day.dom == ''?'border: none;':''}}">
+					<div id="title_{{day.id}}" class="caltitle" ng-click="changeLayout('day',{'date':day.date});">
+						{{day.dom}}
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</script>
+	<script>
+	var currentDate = new Date();
+	var currentLayout = '';
+
+	function getDaysOfMonth (dt) { 
+		
+		var calweeks = [ [], [], [], [], [], []];
+		var wday = 0;
+		var week = 0;
+
+		var year = dt.getFullYear();
+		var month = dt.getMonth();
+	 	var thisMonth = new Date(year, month, 1);
+
+		for (var i = 0; i < thisMonth.getDay(); i ++) { 
+			calweeks[week].push ({ 'id': i + 1000, 'dom': ''});	
+		}
+
+		// okay, lets do all our days of the week.
+		// TODO:  need to fetch/insert the calendar items into this.
+		for (var i = 1; i <= daysInMonth(thisMonth); i ++) { 
+			if (thisMonth.getDay() == 0) { week ++; }
+			calweeks[week].push ({  'id': thisMonth.getDate(), 
+									'dom': thisMonth.getDate(), 
+									'date': thisMonth });	
+			thisMonth = new Date(year, month, thisMonth.getDate() + 1);
+		}
+
+		return calweeks;
+	}
+
+	function daysInMonth(dateIn) {
+		var year = dateIn.getFullYear();
+		var month = dateIn.getMonth();
+		return new Date(year, month, 0).getDate();
+	}
+	function changeLayout (type, param) { 
+		if (param.date != undefined) { 
+			currentDate = new Date (param.date);
+		}
+
+		if (type == '') { 
+			if (currentLayout == '') { return; }
+			type = currentLayout;
+		}
+
+		var it = [ 'day','week','month','year'];
+		for (var i in it) { 
+			if (it[i] != type) { 
+				document.getElementById ('caltable' + it[i]).style.display = 'none';
+				document.getElementById ('click' + it[i]).style.border = '1px solid black';
+			}
+		}
+
+		var tab = document.getElementById ('calcont' + type);
+
+		var scope = angular.element(tab).scope();
+		scope.updateWithParams (param);
+		if (!param['noApply']){
+			scope.$apply();
+		}
+
+		document.getElementById ('caltable' + type).style.display = 'block';
+		document.getElementById ('click' + type).style.border = '3px double black';
+		currentLayout = type;
+	}
+
+	function getSingleDay (dt) { 
+		var out = {};
+		var times = [];
+
+		// setup out times 0-24 hours every 1/2 hour
+		for (var i = 0; i < 48; i+=1) { 
+			var name = Math.floor (i / 2);
+			if (i > 24) { 
+				name = Math.floor ((i - 24) / 2);
+			}
+			if (i == 0 || i == 1) { name = '12'; }
+			if ((i % 2) == 1) { name += ':30'; } else { name += ':00'; }
+			if (i >= 24) { name += 'pm'; } else { name += 'am'; }
+
+			times.push ({ 'name': name })
+		}
+
+		// Note... get items ordered by start time
+		var items = [];
+		for (var i = 0; i <= 10; i++) { 
+			var time = Math.random() * i * 2.4;
+			var left = 0;
+			var width = 100;
+			var height = Math.random() * 3;
+			time = Math.round (time * 2) / 2;
+			height = Math.round (height * 2) / 2;
+			if (time + height > 24) { height = 24 - time; }
+
+			items.push({ 
+				'id': i, 
+				'name': '-' + time + ' - ' + height, 
+				'decTime': time,  // decimal time (i.e. 1 hour and 30 mins == 1.5)
+				'leftPos': left,  // percent
+				'width': width,   // percent
+				'decLength': height,  // decimal time (i.e. 1 hour and 30 mins == 1.5)
+				'basecnt': 1,
+				'basepos': 0,
+				'items': []
+			});
+		}
+
+		for (i in items) { 
+			var flg = 1;
+			var endtime = items[i].decTime + items[i].decLength;
+			while (flg == 1) { 
+				flg = 0;
+				items[i].basecnt = 1;
+				items[i].items = [];
+				for (var it in items) {
+				//console.log (items[it].decTime + '+' + items[it].decTime + '>' + endtime);
+					if (items[it].id != items[i].id &&
+						(
+							items[it].decTime < items[i].decTime && 
+							items[it].decTime + items[it].decLength > items[i].decTime 
+							||
+							items[it].decTime < endtime && 
+							items[it].decTime + items[it].decLength > endtime
+							|| 
+							items[it].decTime == items[i].decTime ||
+							items[it].decTime + items[it].decLength == items[i].decLength 
+						)
+					) {
+						if (items[it].basepos == items[i].basepos) { 
+							items[i].basepos ++;
+							flg = 1;
+							break;
+						}
+						items[i].basecnt ++;
+						items[i].items.push(it);
+					}
+
+				}
+			}
+		}
+
+		var max = 0;
+		for (var it in items) {
+			if (max < items[it].basepos) { 
+				max = items[it].basepos;
+			}
+		}
+		for (i in items) {
+			items[i].width = Math.round(100 / (max + 1));
+			items[i].leftPos = Math.round(items[i].width * items[i].basepos);
+		}
+
+/*
+		for (i in items) { 
+			var time = items[i].decTime;
+			var height = items[i].decLength;
+			var left = items[i].leftPos;
+			var width = items[i].width;
+			
+			for (var it in items) {
+			//	console.log (items[it].decTime + '+' + items[it].decTime + '>' + time);
+				if (items[it].id != items[i].id &&
+					items[it].decTime <= items[i].decTime && 
+					items[it].decTime + items[it].decLength > items[i].decTime ) { 
+					items[i].basecnt ++;
+					items[i].width = 100 / items[i].basecnt;
+					// items[it].basecnt ++;
+					
+					if (items[i].basepos >= items[it].basepos) { 
+						items[i].basepos = items[it].basepos + 1; 
+					}
+					if (items[it].decTime > items[i].decTime && 
+						items[it].basepos >= items[i].basepos) { 
+						var b = items[it].basepos;
+						items[it].basepos = items[i].basepos;
+						items[i].basepos = b;
+					}
+					items[i].leftPos = items[i].width * items[i].basepos;
+
+					items[i].items.push (it);
+					items[it].items.push (i);
+					// left = width;
+					// items[it].width = width;
+				}
+				items[it].width = 100 / items[it].basecnt;
+			}
+		} */
+
+		console.log (items);
+
+		out = {};
+		out.times = times;
+		out.dayName = dt.toLocaleString('en-us', { weekday: "long", day: 'numeric', month: 'long', year: 'numeric' });
+		out.items = items;
+		return out;
+	}
+	
+	var mod = angular.module("calendarApp", []);
+
+	mod.config( [
+		'$compileProvider',
+		function( $compileProvider )
+		{   
+		$compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|javascript):/);
+		}
+	]);
+
+	mod.controller("tableDayController", ['$scope', function($scope) {
+		$scope.updateWithParams = function (param) { 
+			$scope.day = getSingleDay (currentDate);
+			$scope.calweeks = { 'days': getDaysOfMonth(currentDate)};
+		};
+		$scope.changeLayout = function (type, date) { changeLayout (type, { 'date': date, 'noApply': 1 }); }
+		$scope.calweeks = [];
+	}]);
+	mod.controller("tableWeekController", ['$scope', function($scope) {
+		$scope.updateWithParams = function (param) { 
+			var w = [];
+			var wstart = currentDate.getDate() - currentDate.getDay();
+			var month = currentDate.getMonth();
+			var year = currentDate.getFullYear();
+			if (wstart <= 0) { 
+				month -= 1;
+				if (month <= 0) { year --; month = 12; }
+				wstart += daysInMonth(new Date(year, month, 1));
+			}
+			var dt = new Date(year,month, wstart);
+			for (i = 0; i < 7; i ++) { 
+				w[i] = getSingleDay (dt);
+				dt = new Date(year,month, dt.getDate() + 1);
+			}
+			$scope.week = w;
+		};
+		$scope.changeLayout = function (type, date) { changeLayout (type, { 'date': date, 'noApply': 1 }); }
+
+		$scope.week = [];
+	}]);
+
+	mod.controller("tableMonthController", ['$scope', function($scope) {
+		$scope.updateWithParams = function (param) { 
+			$scope.calweeks = { 'monthName': currentDate.toLocaleString('en-us', { month: "long", year: "numeric" }), 
+								'days': getDaysOfMonth(currentDate)};
+		};
+		$scope.changeLayout = function (type, date) { changeLayout (type, { 'date': date, 'noApply': 1 }); }
+		
+		$scope.calweeks = {}; 
+		
+			
+	}]);
+	mod.controller("tableYearController", ['$scope', function($scope) {
+		$scope.updateWithParams = function (param) { 
+			var calmonths = [];
+			var month = 0;
+
+			var year = currentDate.getFullYear();
+		 	var thisMonth;
+			calmonths[0] = [];
+			$scope.yearName = year;
+			
+			for (var m = 1; m <= 12; m ++) { 
+				var week = 0;	
+				thisMonth = new Date(year, m - 1, 1);
+
+				var days = getDaysOfMonth (thisMonth);
+				calmonths[month].push({ 'monthName': thisMonth.toLocaleString('en-us', { month: "long" }), 'days': days, 'date': thisMonth});
+				if ((m - 1) % 4 == 3) { month ++; if (m != 12) { calmonths[month] = []; } }
+			}
+			console.log (calmonths);
+			$scope.monthName = currentDate.toLocaleString('en-us', { month: "long" });
+			$scope.calmonths = calmonths;	
+		};
+		$scope.changeLayout = function (type, date) { changeLayout (type, { 'date': date, 'noApply': 1 }); }
+		$scope.calmonths = [];
+	}]);
+
+	</script>
+</html>

@@ -1,0 +1,256 @@
+<!doctype html>
+<html ng-app="settingsApp">
+	<head>
+		<meta charset="UTF-8">
+		<title>Uchideshi: Settings</title>
+		<script src="../renderer.js"></script>
+		<script src="angular.js"></script>
+	</head>
+	<body id="settingsdash">
+
+		<div id="menu">
+			<div class="icons">
+				<a href="javascript:menuItem ('queries'); ">
+					<i class="fa fa-wpforms" aria-hidden="true"></i><br>
+					Queries
+				</a>
+			</div>
+			<div class="icons">
+				<a href="javascript:menuItem ('settings'); ">
+					<i class="fa fa-cogs" aria-hidden="true"></i><br>
+					Settings
+				</a>
+			</div>
+			<div class="icons">
+				<a href="javascript:menuItem ('themes'); ">
+					<i class="fa fa-map-o" aria-hidden="true"></i><br>
+					Themes
+				</a>
+			</div>
+			<div class="icons">
+				<a href="javascript:menuItem ('plugins'); ">
+					<i class="fa fa-plug" aria-hidden="true"></i><br>
+					Plugins
+				</a>
+			</div>
+			<div class="icons">
+				<a href="javascript:menuItem ('inputs'); ">
+					<i class="fa fa-inbox" aria-hidden="true"></i><br>
+					Inputs
+				</a>
+			</div>
+			<div class="icons">
+				<a href="javascript:menuItem ('tagging'); ">
+					<i class="fa fa-tags" aria-hidden="true"></i><br>
+					Tagging
+				</a>
+			</div>
+			<div class="icons">	
+				<a href="javascript:menuItem ('refreshpage'); ">
+					<i class="fa fa-refresh" aria-hidden="true"></i><br>
+					Refresh
+				</a>
+			</div>
+		</div>
+
+		<div id="queries" class="settingmain" ng-controller="settingQueryControl">
+			<div id="indetaildiv" class="inputdetail">
+				<textarea name="detail_id" id="detail_id" onChange="updateItem(this);"></textarea>
+			</div>
+
+			<span class="title">Queries</span>
+
+			<div id="topQ" class="between" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="noDrop(event)">
+			</div>
+			<div class="repeat" ng-repeat="item in queries track by item.id">
+				<div class="item" draggable="true" ondragstart="drag(event)">
+					<input type="text" name="name_{{item.id}}" onChange="updateItem(this);" value="{{item.queryname}}">
+					<a href="javascript:editquery({{item.id}}); "><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+					<a href="javascript:editquery({{item.id}}); "><i class="fa fa-exclamation-circle" aria-hidden="true"></i></a>
+				</div>
+				<div id="below{{item.id}}" class="between" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="noDrop(event)">
+				</div>
+			</div>
+		</div>
+		<div id="settings" class="settingmain">
+			<span class="title">Settings</span>
+		</div>
+		<div id="themes" class="settingmain" ng-controller="settingThemeControl">
+			<span class="title">Themes</span>
+			<div ng-if="themes" class="pluginbox" ng-repeat="item in themes track by item.id" style="background-image: url({{item.image}})">
+				<div class="pluginname">{{item.name}}</div>
+				<div class="pluginaction">
+					<a href="javascript:editquery({{item.id}}); ">{{item.enabled ? 'Disable':'Enable'}}</i></a>
+				</div>
+			</div>
+			<div ng-if="!themes">
+				There are no themes available
+			</div>
+		</div>
+		<div id="plugins" class="settingmain" ng-controller="settingPluginControl">
+			<span class="title">Plugins</span>
+			<div class="pluginbox" ng-if="plugins" ng-repeat="item in plugins track by item.id" style="background-image: url({{item.image}})">
+				<div class="pluginname">{{item.name}}</div>
+				<div class="pluginaction">
+					<a href="javascript:editquery({{item.id}}); ">{{item.enabled ? 'Disable':'Enable'}}</i></a>
+				</div>
+			</div>
+			<div ng-if="!plugins">
+				There are no plugins available
+			</div>
+		</div>
+		<div id="inputs" class="settingmain" ng-controller="settingInputControl">
+			<span class="title">Inputs</span>
+
+			<select name="selectinput" id="selectinput">
+				<option ng-repeat="item in inputs" value="{{item.slug}}">{{item.name}}
+			</select>
+			<button ng-click="addInput()">Add Input</button>
+			<div style="clear: both;"></div>
+			<div class="inputbox" ng-repeat="item in active" style="background-image: url({{item.image}})">
+				<div class="inputname">{{item.settings.name ? item.settings.name:item.name}}</div>
+				<div class="inputaction">
+					<a ng-click="editInput(item.id);"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+					<a ng-click="deleteInputs(item.id);"><i class="fa fa-times" aria-hidden="true"></i></a>
+				</div>
+			</div>
+		</div>
+		<div id="tagging" class="settingmain" ng-controller="settingTaggingControl">
+			<span class="title">Taggers</span>
+			<div class="taggingbox" ng-repeat="item in taggings" style="background-image: url({{item.image}})">
+				<div class="taggingname">{{item.name}}</div>
+				<div class="taggingaction">
+					<a href="javascript:editquery({{item.id}}); ">{{item.enabled ? 'Disable':'Enable'}}</i></a>
+				</div>
+			</div>
+		</div>
+			taging
+		</div>
+	</body>
+	<script>
+function updateItem (t) { 
+	var name = t.name;
+
+	alert (name);
+}
+
+function editquery(itemid) { 
+	document.getElementById ('detail_id').name = 'param_' + itemid;
+	document.getElementById ('indetaildiv').style.display = "block";
+}
+
+function noDrop(ev) {
+	ev.target.style.height = '5px';
+	ev.target.style.border = 'none';
+    ev.preventDefault();
+}
+
+function allowDrop(ev) {
+	ev.target.style.height = '20px';
+	ev.target.style.border = '1px dashed grey';
+    ev.preventDefault();
+}
+
+function drop (ev) { 
+	noDrop(ev);
+}
+
+function drag (ev) { 
+	console.log(ev);
+}
+
+function menuItem(item) { 
+	var divs = [ 'queries', 'settings', 'themes', 'plugins', 'inputs', 'tagging' ];
+
+	for (var x in divs) { 
+		if (item == divs[x]) { 
+			document.getElementById (divs[x]).style.display = 'block';			
+		} else {
+			document.getElementById (divs[x]).style.display = 'none';			
+		}
+	}
+}
+
+// Define the `settingsApp` module
+var settingsApp = angular.module('settingsApp', []).config( [
+    '$compileProvider',
+    function( $compileProvider )
+    {   
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|javascript):/);
+        // Angular before v1.2 uses $compileProvider.urlSanitizationWhitelist(...)
+    }
+]);
+
+// Define the `PhoneListController` controller on the `settingsApp` module
+settingsApp.controller('settingQueryControl', function ($scope) {
+	var x = global.plugins.callFunction ('getQueries', {'tree': false});
+    $scope.queries = x;
+});
+
+settingsApp.controller('settingPluginControl', function ($scope) {
+	var x = global.plugins.callFunction ('getAllResources', { 'type': 'plugin' });
+    $scope.plugins = x;
+});
+
+settingsApp.controller('settingThemeControl', function ($scope) {
+	var x = global.plugins.callFunction ('getAllResources', { 'type': 'theme' });
+    $scope.themes = x;
+});
+
+settingsApp.controller('settingInputControl', function ($scope) {
+	var x = global.plugins.callFunction ('getInputs');
+	var y = global.plugins.callFunction ('getActiveInputs');
+    $scope.inputs = x;
+   	$scope.active = y;
+
+	$scope.editInput = function (id) { 
+		var flg = 0;
+		for (var x in $scope.active) { 
+			if (id == $scope.active[x].id) { 
+				var win;
+				win = $scope.active[x].editPage;
+				if (typeof win == 'undefined' || win == '') { 
+					win = 'editinput.html';
+				}
+				global.plugins.callFunction ('openNewWindow', 
+							[	win, 
+								{ center: true, width: 600, height: 500, devTools: true}, 
+								{ 'id': id } ]);
+				flg = 1;
+				break;  
+			}
+		}		
+		if (flg == 0) { 
+			alert ("Failed to find an active input to edit");
+		}
+	}
+	
+	$scope.deleteInputs = function (id) { 
+		var n = global.plugins.inputs.delActiveInput (id);
+		for (var x in $scope.active) { 
+			if (id == $scope.active[x].id) { $scope.active.splice (x, 1); break;  }
+		}
+		
+	}
+
+	$scope.addInput = function () { 
+		var slug = document.getElementById ('selectinput').value
+		var name = '';
+		for (var x in $scope.inputs) { 
+			if (slug == $scope.inputs[x].slug) { name = $scope.inputs[x].name}
+		}
+		if (name == '') { name = slug; }
+		var n = global.plugins.inputs.addActiveInput (slug);
+		$scope.active.push({id: n,name: name});
+
+	}	
+     
+});
+
+settingsApp.controller('settingTaggingControl', function ($scope) {
+	var x = global.plugins.callFunction ('getTaggers');
+    $scope.taggings = x;
+});
+
+	</script>
+</html>

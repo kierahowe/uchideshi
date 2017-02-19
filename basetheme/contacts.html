@@ -1,0 +1,223 @@
+<!doctype html>
+<html ng-app="contactApp">
+	<head>
+		<meta charset="UTF-8">
+		<title>Uchideshi: Contacts</title>
+		<script src="angular.js"></script>
+		<script src="../renderer.js"></script>
+	</head>
+	<body id="maincontacts" ng-controller="searchController">
+		<div id="contfindmain" >
+			<input type="text" id="searchterm" ng-model="terms.text" ng-change="changeSearch();">
+			<i class="fa fa-search searchicon" aria-hidden="true"></i><br><br>
+			
+			<div id="sopts_{{option.id}}" class="options" ng-repeat="option in options">
+				<i class="fa fa-caret-right" aria-hidden="true" ng-click="open(option.id)"></i>
+				<!-- OR fa-caret-down -->
+				<span ng-click="open(option.id)">{{option.name}}</span>
+				<div id="ssubopts_{{option.id}}" class="suboptions" >
+					<div ng-repeat="select in option.select"  id="selectopt_{{select.id}}"
+						ng-click="toggleSubOption(select.id)">
+						{{select.name}}
+					</div>		
+				</div>		
+			</div>
+		</div>
+		<div id="contpeoplelist">
+			<div id="mainpeoplelist">
+				<div ng-repeat="person in people"  id="people_{{person.id}}"
+					ng-click="selectPerson(person.id)" class="peoplelist">
+					{{person.displayname}}
+				</div>		
+			</div>
+			<div id="tmpmainpeople"  style="display:none;"></div>
+		</div>
+		<div id="contdetail">
+			<div ng-if="selectedperson">
+				<div id="personpic" ng-if="person.imgtype" style="background-image: url(data:{{person.imgtype?person.imgtype:'image/jpeg'}};base64,{{person.base64img?person.base64img:''}});"></div>
+				
+				<span class="persontitle">{{person.displayname}}</span>
+				<span class="personcompany" ng-if="person.company">{{person.company}}</span>
+				
+				<div class="personemail" ng-if="person.email"> 
+					<span class="personlabel">Email:</span>
+					<div ng-repeat="e in person.email">
+						<span class="personlabel">{{e.type}}:</span>
+						<span class="personemail1">{{e.email}}</span>
+					</div>
+				</div>
+
+				<div class="personphone" ng-if="person.phone"> 
+					<span class="personlabel">Phones:</span>
+					<div ng-repeat="ph in person.phone">
+						<span class="personlabel">{{ph.type}}:</span>
+						<span class="personphone1">{{ph.phone}}</span>
+					</div>
+				</div>
+				
+				<div class="personaddr" ng-if="person.address">
+					<span class="personlabel">Address:</span>
+					<div class="personaddrrep" ng-repeat="addr in person.address">
+						<span class="personaddr1">{{addr.address1}}</span>
+						<span class="personaddr2" ng-if="addr.address2">{{addr.address2}}</span>
+						<span class="personaddrcity">{{addr.city}}</span>
+						<span class="personaddrprov">{{addr.province}}</span>
+						<span class="personaddrcountry">{{addr.country}}</span>
+						<span class="personaddrpost">{{addr.postal}}</span>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</body>
+	<script>
+
+	var mod = angular.module("contactApp", []);
+
+	mod.config( [
+		'$compileProvider',
+		function( $compileProvider )
+		{   
+		$compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|javascript):/);
+		}
+	]);
+
+	mod.controller("searchController", ['$scope', function($scope) {
+		$scope.changeSearch = function () { 
+			$scope.val ++;
+			$scope.updatePeople();
+		}
+		$scope.open = function (id) { 
+			var op = document.getElementById('sopts_' + id);
+			var icon = op.getElementsByTagName ('i')[0];
+			
+			if (icon.classList.contains ('fa-caret-right')) { 
+    			icon.classList.add('fa-caret-down');
+				icon.classList.remove('fa-caret-right');
+				document.getElementById ('ssubopts_' + id).style.display = 'block';
+			} else { 
+    			icon.classList.add('fa-caret-right');
+				icon.classList.remove('fa-caret-down');
+				document.getElementById ('ssubopts_' + id).style.display = 'none';
+			}
+	
+
+		}
+		$scope.toggleSubOption = function (id) { 
+			var op = document.getElementById('selectopt_' + id);
+			if (op.classList.contains ('optselect')) { 
+				op.classList.remove('optselect');
+				$scope.terms.tags[id] = 0;
+			} else { 
+    			op.classList.add('optselect');
+				$scope.terms.tags[id] = 1;
+			}
+			$scope.updatePeople();
+		}
+
+		$scope.selectPerson = function (id) { 
+			
+			for (var p in $scope.people) { 
+				var person = $scope.people[p];
+				var op = document.getElementById('people_' + person.id);
+				if (person.id != id){ 
+					op.classList.remove('optselect');
+				}
+			}
+			var op = document.getElementById('people_' + id);
+			op.classList.add('optselect');
+
+			$scope.selectedperson = id;
+			$scope.getPersonInfo (id);
+		}
+
+		$scope.getPersonInfo = function (id) { 
+			$scope.person = { 
+				'id': 1, 
+				'firstname': 'Homer', 
+				'lastname': 'Simpson', 
+				'displayname': 'Homer Jay',
+				'company': 'Springfield Nuke Inc.',
+				'phone': [ 
+					{ 'type': 'home', 'phone': '755-223-2133'},
+				 	{ 'type': 'work', 'phone': '755-256-1233'}, 
+				 	{ 'type': 'other', 'phone': '755-978-2553'} ], 
+				'email': [ 
+					{ 'type': 'home', 'email': 'homer@springfieldnuke.com'},
+				 	{ 'type': 'work', 'email': 'homer@simpson.com'}, 
+				 	{ 'type': 'other', 'email': 'cooldude93@beer.com'} ], 
+				'address': [ 
+					{ 'type': 'home', 'address1': '742 Evergreen Terrace', 'address2': '', 'city': 'Springfield', 'province': 'somewhere', 'postal': '90210', 'country': 'US'}, 
+					{ 'type': 'office', 'address1': '1 Burns Drive', 'address2': '', 'city': 'Springfield', 'province': 'somewhere', 'postal': '90210', 'country': 'US'}, 
+				],
+				'imgtype': 'image/jpeg', 
+				'base64img': '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', 
+			};
+		}
+
+		$scope.updatePeople = function () { 
+			var plist = document.getElementById('mainpeoplelist');
+			var tmp = document.getElementById('tmpmainpeople');
+
+			if (tmp.innerHTML == '') { 
+				tmp.innerHTML = plist.innerHTML;
+			}
+//			plist.setAttribute('ng-cloak', '1');
+//			tmp.style.display = 'block';
+
+			// Do query here.
+			$scope.selectedperson = null;
+			$scope.people = [
+				{ 'id': 1, 'firstname': 'Homer', 'lastname': 'Simpson', 'displayname': 'Homer Jay'},
+				{ 'id': 2, 'firstname': 'Marge', 'lastname': 'Simpson', 'displayname': 'Marge'},
+				{ 'id': 3, 'firstname': 'Lisa', 'lastname': 'Simpson', 'displayname': 'Lisa'},
+				{ 'id': 4, 'firstname': 'Bart', 'lastname': 'Simpson', 'displayname': 'El Barto'},
+				{ 'id': 5, 'firstname': 'Maggie', 'lastname': 'Simpson', 'displayname': 'Maggie'},
+				{ 'id': 6, 'firstname': 'Abraham', 'lastname': 'Simpson', 'displayname': 'Grandpa'},
+			];
+		}
+
+		$scope.terms = {
+			'text': '',
+			'tags': {},
+		};
+
+		$scope.person = { };
+		
+		$scope.people = [];
+		$scope.val = 0;
+		$scope.options = [];
+		$scope.options.push (	{ 'id': 1, 'name': 'Tags', 'select': [ 
+									{ 'id': 1, 'name': 'a'}, 
+									{ 'id': 2, 'name': 'b'}, 
+									{ 'id': 3, 'name': 'c'}, 
+									{ 'id': 4, 'name': 'd'}, 
+									{ 'id': 5, 'name': 'e'}
+								]},
+								{ 'id': 2, 'name': 'Sources', 'select': [ 
+									{ 'id': 6, 'name': 'a'}, 
+									{ 'id': 7, 'name': 'b'}, 
+									{ 'id': 8, 'name': 'c'}, 
+									{ 'id': 9, 'name': 'd'}, 
+									{ 'id': 10, 'name': 'e'}
+								]},
+								{ 'id': 3, 'name': 'Queries', 'select': [ 
+									{ 'id': 11, 'name': 'a'}, 
+									{ 'id': 12, 'name': 'b'}, 
+									{ 'id': 13, 'name': 'c'}, 
+									{ 'id': 14, 'name': 'd'}, 
+									{ 'id': 15, 'name': 'e'}
+								]},
+								{ 'id': 4, 'name': 'Something', 'select': [ 
+									{ 'id': 16, 'name': 'a'}, 
+									{ 'id': 17, 'name': 'b'}, 
+									{ 'id': 18, 'name': 'c'}, 
+									{ 'id': 19, 'name': 'd'}, 
+									{ 'id': 20, 'name': 'e'}
+								]}
+							)
+		$scope.updatePeople();
+	}]);
+
+	</script>
+</html>

@@ -1,0 +1,547 @@
+@import url(fontawesome/css/font-awesome.css);
+@import url(fonts/fonts.css);
+body {
+  margin: 0px;
+  padding: 0px;
+  font-family: 'Open Sans', sans-serif; }
+
+a {
+  color: #333333; }
+
+[ng\:cloak],
+[ng-cloak],
+[data-ng-cloak],
+[x-ng-cloak],
+.ng-cloak,
+.x-ng-cloak {
+  display: none !important; }
+
+/*   
+	Menus throughout 
+*/
+#menu, #editing, #qsearch {
+  position: fixed;
+  width: 100%;
+  height: 70px;
+  border: 1px solid black;
+  background-color: brown;
+  padding: 4px;
+  padding-top: 8px; }
+
+#menu .icons {
+  width: 60px;
+  padding: 5px;
+  float: left;
+  text-align: center; }
+
+#menu .icons .fa {
+  font-size: 40px; }
+
+#menu .icons a {
+  color: #ffffff;
+  text-decoration: none; }
+
+#menu .icons a:hover {
+  text-decoration: underline; }
+
+.bottomspacer {
+  height: 84px; }
+
+.editingon .bottomspacer {
+  height: 128px; }
+
+#bottomspacer.showsearch {
+  height: 242px; }
+
+.itemedit {
+  display: none; }
+
+.editingon .itemedit {
+  display: inline-block; }
+
+.itemcount {
+  display: inline-block; }
+
+.editingon .itemcount {
+  display: none; }
+
+#editing {
+  display: none;
+  height: 30px;
+  bottom: 70px; }
+
+.editingon #editing {
+  display: block; }
+
+#qsearch {
+  display: none;
+  height: 100px;
+  bottom: 114px;
+  background-color: white;
+  overflow: scroll;
+  color: black; }
+
+.editingon #qsearch.showsearch {
+  display: block; }
+
+#topquicklaunch {
+  border-bottom: double 3px black;
+  background-color: brown;
+  padding: 10px;
+  font-size: 25px; }
+
+/*   
+	Main Dashboard Page
+*/
+#maindash {
+  background-color: #222222;
+  color: #dddddd; }
+  #maindash .between {
+    width: 150px;
+    height: 5px;
+    margin-left: 0px; }
+  #maindash .between.evenwith {
+    margin-left: -20px; }
+  #maindash .item {
+    display: inline-block;
+    margin-left: 10px; }
+  #maindash .item:before {
+    content: "\f10c";
+    font-family: FontAwesome; }
+  #maindash .editingon .item:before {
+    content: "\f047";
+    font-family: FontAwesome; }
+  #maindash .item input {
+    width: 200px; }
+  #maindash a {
+    font-weight: normal;
+    color: #dddddd; }
+  #maindash #menu {
+    bottom: 0;
+    height: 60px; }
+  #maindash ul {
+    list-style-type: none;
+    list-style: none;
+    padding-left: 15px; }
+  #maindash li {
+    padding-top: 5px; }
+  #maindash li:before {
+    content: "\f068";
+    font-family: FontAwesome; }
+  #maindash li a {
+    color: inherit;
+    text-decoration: none; }
+  #maindash li a:hover {
+    color: green; }
+
+/*   
+	Settings Page
+*/
+#settingsdash .title {
+  font-weight: bold;
+  font-size: 19px;
+  display: block; }
+#settingsdash #menu {
+  top: 0; }
+#settingsdash .settingmain {
+  overflow: auto;
+  position: fixed;
+  width: 100%;
+  top: 84px;
+  height: 86%;
+  padding: 10px;
+  display: none; }
+#settingsdash .settingmain .inputdetail {
+  width: 50%;
+  height: 100%;
+  border: 1px solid black;
+  float: right;
+  margin: -10px;
+  display: none; }
+#settingsdash .settingmain .between {
+  width: 300px;
+  height: 5px; }
+#settingsdash .settingmain .item {
+  width: 300px; }
+#settingsdash .settingmain .item input {
+  width: 200px; }
+#settingsdash .settingmain .inputdetail textarea {
+  width: 90%;
+  height: 400px; }
+#settingsdash .settingmain .repeat {
+  width: 300px; }
+#settingsdash #queries .repeat a {
+  color: inherit; }
+#settingsdash #plugins .pluginbox, #settingsdash #themes .pluginbox {
+  width: 100px;
+  height: 100px;
+  background-position: cover;
+  border: 1px solid #999999;
+  float: left;
+  margin: 4px;
+  padding: 2px; }
+#settingsdash #plugins .pluginname, #settingsdash #themes .pluginname {
+  height: 40px;
+  font-size: 14px;
+  overflow: hidden;
+  text-align: center; }
+#settingsdash #plugins .pluginaction, #settingsdash #themes .pluginaction {
+  margin-top: 35px;
+  text-align: center; }
+#settingsdash #inputs .inputbox {
+  width: 100px;
+  height: 100px;
+  background-position: cover;
+  border: 1px solid #999999;
+  float: left;
+  margin: 4px;
+  padding: 2px; }
+#settingsdash #inputs .inputname {
+  height: 40px;
+  font-size: 14px;
+  overflow: hidden;
+  text-align: center; }
+#settingsdash #inputs .inputaction {
+  margin-top: 35px;
+  text-align: center; }
+
+/*   
+	Message Listing Page
+*/
+#messagepage #messages {
+  width: 100%;
+  font-size: 14px;
+  overflow: scroll;
+  border-collapse: collapse;
+  border: 1px solid black;
+  height: 100px;
+  overflow: auto; }
+
+#messagepage #messages th {
+  text-align: left;
+  font-weight: normal;
+  border-bottom: 1px solid #dddddd;
+  border-left: 1px solid #dddddd; }
+
+#messagepage #messages tbody {
+  height: 100px;
+  overflow: auto;
+  width: 100%; }
+
+#messagepage #messages tbody tr:hover {
+  background-color: #cccccc;
+  cursor: arrow; }
+
+#messagepage #messages tbody td {
+  cursor: arrow;
+  overflow: hidden; }
+
+#messagepage #messages tbody td:nth-child(1) {
+  width: 20px; }
+
+#messagepage #messages tbody td:nth-child(2) {
+  width: 120px; }
+
+#messagepage #messages tbody td:nth-child(3) {
+  width: 120px; }
+
+#messagepage #messages tbody td:nth-child(4) {
+  width: 120px; }
+
+#messagepage #messages tbody td:nth-child(5) {
+  width: 120px; }
+
+#messagepage #messages tbody td:nth-child(6) {
+  width: 120px; }
+
+#messagepage #messages tbody td i {
+  width: 10px; }
+
+/* Edit Input */
+.inputrepeat {
+  padding: 5px; }
+
+.inputrepeat .label {
+  width: 50%;
+  float: left;
+  text-align: right;
+  margin-right: 20px; }
+
+/* Inputs */
+input[type=text] {
+  padding: 5px;
+  border-radius: 5px;
+  font-family: 'Open Sans', sans-serif;
+  height: 7px; }
+
+/* Calendar Page */
+.caltable {
+  display: table;
+  margin-top: 0px;
+  width: 100%;
+  height: 88vh;
+  border-collapse: collapse;
+  box-sizing: border-box; }
+
+#caltableday, #caltableweek, #caltablemonth, #caltableyear {
+  display: none; }
+
+#caltablemonth {
+  box-sizing: border-box; }
+
+.calrow {
+  display: table-row; }
+
+.calcell {
+  display: table-cell;
+  height: 17.4vh;
+  border: 1px solid black;
+  width: 14%; }
+
+#caltableyear .calcell {
+  height: auto; }
+
+#caltableyear + .caltable + .calrow + .calcell {
+  padding: 14px; }
+
+.caltitle {
+  background-color: brown;
+  color: white;
+  font-size: 18px;
+  text-align: center;
+  cursor: pointer; }
+
+.calmaintitle {
+  width: 100%;
+  background-color: brown;
+  color: white;
+  font-size: 18px;
+  padding: 5px;
+  box-sizing: border-box; }
+
+#calselectlayout {
+  position: relative;
+  width: 388px;
+  float: left;
+  left: 50%;
+  margin-left: -194px;
+  border-collapse: collapse; }
+
+#calselectlayout div {
+  display: inline-block;
+  border: 1px solid black;
+  margin: none;
+  cursor: pointer;
+  padding: 5px;
+  width: 80px;
+  text-align: center;
+  border-radius: 7px; }
+
+#calselectlayout div:hover {
+  background-color: #951A1A; }
+
+#caldaynav {
+  float: right;
+  padding: 5px;
+  padding-right: 30px; }
+
+#caldaynav span {
+  border: 1px solid black;
+  padding: 5px;
+  font-size: 18px;
+  border-radius: 7px; }
+
+#calmonthtitle {
+  display: table-caption;
+  text-align: center;
+  font-size: 25px;
+  padding: 10px; }
+
+#caltableday {
+  margin-left: 20px;
+  margin-right: 20px; }
+
+.caldaycell {
+  height: 93vh;
+  width: 100%; }
+
+.caldaytitle {
+  text-align: center;
+  font-size: 28px;
+  padding: 10px; }
+
+#calcontweek .caldaytitle {
+  font-size: 14px;
+  font-weight: bold; }
+
+.caldayscroll {
+  height: 93vh;
+  overflow: scroll; }
+
+.caltimeitemnames {
+  height: 2060px;
+  width: 80px;
+  float: left;
+  margin-top: 20px; }
+
+.caltiname {
+  margin-top: -12px; }
+
+.calticell {
+  width: 80px;
+  height: 55px;
+  text-align: right; }
+
+.timeitems {
+  position: relative;
+  margin-left: 85px;
+  height: 2060px;
+  margin-top: 0px;
+  padding-top: 20px; }
+
+.calbordcell {
+  position: relative;
+  box-sizing: border-box;
+  border-top: 1px solid black;
+  border-bottom: 1px dotted black;
+  height: 21.5px;
+  margin-bottom: 21.5px; }
+
+.caldayhalf {
+  float: left;
+  width: 49%; }
+
+.caldayhalfright {
+  float: right;
+  width: 49%; }
+
+#calcontyear .caltable {
+  height: 280px; }
+
+#calcontday .caltable {
+  width: 300px;
+  height: 280px;
+  float: right; }
+
+#calcontday .calcell {
+  height: auto; }
+
+.calitementry {
+  position: absolute;
+  overflow: hidden;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  z-index: 100;
+  float: left;
+  background-color: orange;
+  border-radius: 5px;
+  border: 1px solid black;
+  min-height: 20px; }
+
+/*  Contact page  */
+#contfindmain {
+  position: relative;
+  padding: 10px;
+  height: 92vh;
+  background-color: #eeeeee;
+  border-right: 1px solid black;
+  float: left;
+  width: 200px;
+  overflow: scroll;
+  overflow-x: hidden; }
+
+#contpeoplelist {
+  padding: 10px;
+  height: 92vh;
+  background-color: white;
+  border-right: 1px solid black;
+  float: left;
+  width: 200px;
+  overflow: scroll;
+  overflow-x: hidden; }
+
+#contdetail {
+  padding: 10px;
+  height: 92vh;
+  background-color: white;
+  margin-left: 450px;
+  overflow: scroll;
+  overflow-x: hidden; }
+
+#searchterm {
+  width: 86%;
+  padding-left: 20px; }
+
+#contfindmain .searchicon {
+  position: absolute;
+  top: 15px;
+  left: 13px;
+  font-size: 14px; }
+
+#contfindmain .options {
+  margin-bottom: 10px; }
+
+#contfindmain .suboptions {
+  display: none;
+  padding-left: 10px; }
+
+.optselect {
+  background-color: #bbbbbb; }
+
+#contfindmain .options i, #contfindmain .options span {
+  cursor: pointer; }
+
+#contfindmain .suboptions div {
+  cursor: pointer; }
+
+.persontitle {
+  font-size: 25px;
+  display: block; }
+
+.personemail {
+  margin-top: 20px; }
+
+.personphone {
+  margin-top: 20px; }
+
+.personaddr {
+  margin-top: 20px; }
+
+.personaddr1 {
+  display: block; }
+
+.personaddr2 {
+  display: block; }
+
+.personaddrcity {
+  display: block; }
+
+.personaddrprov {
+  display: block; }
+
+.personaddrcountry {
+  display: block; }
+
+.personaddrpost {
+  display: block; }
+
+.personlabel {
+  font-weight: bold;
+  text-transform: uppercase; }
+
+.peoplelist {
+  cursor: pointer; }
+
+#personpic {
+  background-size: contain;
+  background-position: top left;
+  height: 150px;
+  width: 150px;
+  float: right;
+  background-repeat: no-repeat; }
+
+.personaddrrep {
+  margin-bottom: 10px; }
+
+/*# sourceMappingURL=style.css.map */
